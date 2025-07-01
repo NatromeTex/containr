@@ -9,7 +9,7 @@ setuptools.setup(
     author="Natrome Tex",
     author_email="natrometex2014@gmail.com",
     package_dir={"": "src"},
-    packages=setuptools.find_packages(where="src"),
+    packages=["containr"],
     description="A CLI tool that allows you to create self-contained project folders without files littering your root folders",
     long_description=description,
     long_description_content_type="text/markdown",
@@ -19,7 +19,7 @@ setuptools.setup(
     install_requires=[],
     entry_points={
         "console_scripts": [
-            "containr=cli:main",
+            "containr=containr.cli:main",
         ],
     },
 )

@@ -4,6 +4,7 @@ import argparse
 import subprocess
 import json
 import sys
+import questionary
 from urllib.request import urlopen
 from rich.console import Console
 from rich.prompt import Prompt
@@ -14,7 +15,6 @@ console = Console()
 
 BASE_DIR = os.path.abspath("containr_workspace")
 os.makedirs(BASE_DIR, exist_ok=True)
-
 
 def get_installed_python_versions():
   versions = set()
@@ -71,8 +71,10 @@ def get_latest_react_native_versions():
 def interactive_create():
   console.print(Panel("[bold cyan]containr: Project Environment Creator[/]"))
 
-  choices = ["python", "node", "react", "react native"]
-  lang = Prompt.ask("Select project type", choices=choices)
+  lang = questionary.select(
+    "Select project type:",
+    choices=["python", "node", "react", "react native"]
+  ).ask()
 
   if lang == "python":
     versions = get_installed_python_versions()
@@ -85,8 +87,12 @@ def interactive_create():
   else:
     versions = ["latest"]
 
-  version = Prompt.ask("Select version (or enter manually)", choices=versions, default=versions[0])
-  name = Prompt.ask("Enter project name")
+  version = questionary.select(
+    "Select version:",
+    choices=versions
+  ).ask()
+
+  name = questionary.text("Enter project name:").ask()
 
   path = os.path.join(BASE_DIR, name)
   if os.path.exists(path):
