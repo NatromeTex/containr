@@ -10,6 +10,7 @@ from rich.console import Console
 from rich.prompt import Prompt
 from rich.panel import Panel
 from rich.table import Table
+from .util import create_python_workspace
 
 console = Console()
 
@@ -73,16 +74,16 @@ def interactive_create():
 
   lang = questionary.select(
     "Select project type:",
-    choices=["python", "node", "react", "react native"]
+    choices=["Python", "Node", "React", "React native"]
   ).ask()
 
-  if lang == "python":
+  if lang == "Python":
     versions = get_installed_python_versions()
-  elif lang == "node":
+  elif lang == "Node":
     versions = get_latest_node_versions()
-  elif lang == "react":
+  elif lang == "React":
     versions = get_latest_react_versions()
-  elif lang == "react native":
+  elif lang == "React native":
     versions = get_latest_react_native_versions()
   else:
     versions = ["latest"]
@@ -102,10 +103,10 @@ def interactive_create():
   os.makedirs(path)
   os.makedirs(os.path.join(path, ".cache"))
 
-  if lang == "python":
-    os.makedirs(os.path.join(path, ".venv"))
-  elif lang in ["node", "react", "react native"]:
-    os.makedirs(os.path.join(path, "node_modules"))
+  if lang == "Python":
+    console.print("calling create_py function")
+    create_python_workspace(path, version)
+  elif lang in ["Node", "React", "React native"]:
     os.makedirs(os.path.join(path, "cache"))
 
   with open(os.path.join(path, "project.meta"), "w") as f:
