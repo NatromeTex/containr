@@ -7,9 +7,8 @@ import sys
 import questionary
 from urllib.request import urlopen
 from rich.console import Console
-from rich.prompt import Prompt
+from rich.prompt import Confirm
 from rich.panel import Panel
-from rich.table import Table
 from .util import create_python_workspace
 
 console = Console()
@@ -133,12 +132,24 @@ def move_project(name, new_path):
   else:
     console.print(f"[red]Error:[/] Project '{name}' not found.")
 
+def nuke_project():
+    folders = [f for f in os.listdir(BASE_DIR) if os.path.isdir(os.path.join(BASE_DIR, f))]
+    console.print(f"Found [bold]{len(folders)}[/] projects in workspace.")
+    if Confirm.ask("[bold red]This will delete ALL projects in the workspace permanently. Are you sure?[/bold red]", default=False):
+        for folder in folders:
+            shutil.rmtree(os.path.join(BASE_DIR, folder))
+            console.print(f"[red]Deleted:[/] {folder}")
+        console.print("[green]All projects deleted.[/]")
+    else:
+        console.print("[yellow]Operation cancelled. No files were modified.[/]")
+
 
 def main():
   parser = argparse.ArgumentParser(description="containr: isolated dev environment CLI")
   parser.add_argument("create", nargs="?", help="Create a new project")
   parser.add_argument("-d", metavar="NAME", help="Delete a project")
   parser.add_argument("-m", nargs=2, metavar=("NAME", "NEW_PATH"), help="Move a project")
+  parser.add_argument("--nuke", action="store_true", help="Remove all projects from workspace")
   args = parser.parse_args()
 
   if args.create:
@@ -147,6 +158,9 @@ def main():
     delete_project(args.d)
   elif args.m:
     move_project(args.m[0], args.m[1])
+  elif args.nuke:
+    nuke_project()
+
   else:
     parser.print_help()
 
